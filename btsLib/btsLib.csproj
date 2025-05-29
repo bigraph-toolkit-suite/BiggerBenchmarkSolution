@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- 
+  Change these paths according to your 
+  installation location of GrGen.NET 
+  -->
+  <!-- GrGen.NET Dependencies -->
+  <ItemGroup>
+    <Reference Include="libGr">
+      <HintPath>/opt/grgen/bin/libGr.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

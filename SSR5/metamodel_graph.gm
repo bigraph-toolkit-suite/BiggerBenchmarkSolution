@@ -1,0 +1,50 @@
+abstract node class BPlace { }
+abstract node class BPoint { }
+abstract node class BLink { }
+abstract node class BNode { }
+node class BRoot extends BPlace {
+  ix: int;
+}
+node class BSite extends BPlace {
+  ix: int;
+}
+node class BPort extends BPoint {
+  ix: int;
+}
+node class BInnerName extends BPoint { }
+node class BEdge extends BLink { }
+node class BOuterName extends BLink { }
+edge class bPrnt { }
+edge class bChild { }
+edge class bNode { }
+edge class bPorts { }
+edge class bLink { }
+edge class bPoints { }
+
+node class VarSpace extends BNode { }
+node class True extends BNode { }
+node class False extends BNode { }
+node class Error extends BNode { }
+node class Locale extends BNode { }
+node class Route extends BNode { }
+node class WayPoint extends BNode { }
+node class OccupiedBy extends BNode { }
+node class Robot extends BNode { }
+node class ID extends BNode { }
+node class N0 extends BNode { }
+node class N1 extends BNode { }
+node class N2 extends BNode { }
+node class N3 extends BNode { }
+node class N4 extends BNode { }
+node class N5 extends BNode { }
+node class N6 extends BNode { }
+node class N7 extends BNode { }
+node class N8 extends BNode { }
+node class N9 extends BNode { }
+node class N10 extends BNode { }
+node class Bat extends BNode { }
+node class Pow extends BNode { }
+node class SLck extends BNode { }
+node class SLckRef extends BNode { }
+node class Mvmt extends BNode { }
+node class Token extends BNode { }

@@ -1,0 +1,38 @@
+abstract node class BPlace { }
+abstract node class BPoint { }
+abstract node class BLink { }
+abstract node class BNode { }
+node class BRoot extends BPlace {
+  ix: int;
+}
+node class BSite extends BPlace {
+  ix: int;
+}
+node class BPort extends BPoint {
+  ix: int;
+}
+node class BInnerName extends BPoint { }
+node class BEdge extends BLink { }
+node class BOuterName extends BLink { }
+edge class bPrnt { }
+edge class bChild { }
+edge class bNode { }
+edge class bPorts { }
+edge class bLink { }
+edge class bPoints { }
+
+node class append extends BNode { }
+node class main extends BNode { }
+node class list extends BNode { }
+node class this extends BNode { }
+node class thisRef extends BNode { }
+node class Cell extends BNode { }
+node class Void extends BNode { }
+node class val extends BNode { }
+node class N1 extends BNode { }
+node class N2 extends BNode { }
+node class N3 extends BNode { }
+node class N4 extends BNode { }
+node class N5 extends BNode { }
+node class N6 extends BNode { }
+node class next extends BNode { }

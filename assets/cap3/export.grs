@@ -1,0 +1,8 @@
+include "host_graph.grs"
+
+debug set layout Organic
+
+show graph ycomp
+
+export "initial_graph.grs"
+

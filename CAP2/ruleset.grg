@@ -1,0 +1,257 @@
+#using "metamodel_graph.gm"
+pattern nac_NodesWithoutSites(src:BNode, var validChildCount: int) {
+    negative {
+        if { adjacentIncoming(src, bPrnt).size() != validChildCount; }
+    }
+}
+
+rule nextRule {
+r0:Node; r1:Node; v6:val; v0:this; v1:thisRef; v1_p0:BPort; v2:next; v3:Cell; v4:this; v5:append; v5_p0:BPort; 
+v0 -c0:bPrnt-> r0;
+v2 -c1:bPrnt-> r0;
+v5 -c2:bPrnt-> r1;
+v1 -c3:bPrnt-> v0;
+v3 -c4:bPrnt-> v2;
+v5_p0 -c5:bNode-> v5;
+v6 -c6:bPrnt-> v5;
+v1_p0 -c7:bNode-> v1;
+v4 -c8:bPrnt-> v3;
+pat0:nac_NodesWithoutSites(v1, 0);
+pat1:nac_NodesWithoutSites(v2, 1);
+pat2:nac_NodesWithoutSites(v5, 1);
+if { v1_p0.ix == 0; }
+if { v5_p0.ix == 0; }
+
+e0:BEdge;
+v5_p0 -:bLink-> e0;
+v1_p0 -:bLink-> e0;
+replace {
+v6_b006991:append;
+v6_b006991 -:bPrnt-> r1;
+v6_b006991_p0:BPort;
+v6_b006991_p0 -c9:bNode-> v6_b006991;
+v5 -:bPrnt-> v6_b006991;
+v5_p0 -c5-> v5;
+v6 -c6-> v5;
+v0 -c0-> r0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c1-> r0;
+v3 -c4-> v2;
+v4 -c8-> v3;
+v5_e435394:thisRef;
+v5_e435394 -:bPrnt-> v4;
+v5_e435394_p0:BPort;
+v5_e435394_p0 -c10:bNode-> v5_e435394;
+e1_1d1c66:BEdge;
+v5_p0 -:bLink-> e1_1d1c66;
+v5_e435394_p0 -:bLink-> e1_1d1c66;
+v6_b006991_p0 -:bLink-> e0;
+v1_p0 -:bLink-> e0;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v0, v1, v2, v3, r0, v4, r1, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v6 -> v6, 
+v0 -> v0, 
+v3 -> v3, 
+v4 -> v4 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule appendRule {
+r0:Node; r1:Node; v0:Cell; v1:this; v2:thisRef; v2_p0:BPort; v3:val; v4:append; v4_p0:BPort; v5:val; 
+v0 -c0:bPrnt-> r0;
+v4 -c1:bPrnt-> r1;
+v1 -c2:bPrnt-> v0;
+v3 -c3:bPrnt-> v0;
+v4_p0 -c4:bNode-> v4;
+v5 -c5:bPrnt-> v4;
+v2 -c6:bPrnt-> v1;
+v2_p0 -c7:bNode-> v2;
+pat0:nac_NodesWithoutSites(v0, 2);
+pat1:nac_NodesWithoutSites(v2, 0);
+pat2:nac_NodesWithoutSites(v4, 1);
+if { v2_p0.ix == 0; }
+if { v4_p0.ix == 0; }
+
+e0:BEdge;
+v4_p0 -:bLink-> e0;
+v2_p0 -:bLink-> e0;
+replace {
+v5 -:bPrnt-> v4_0658772;
+v7_085d921:Void;
+v7_085d921 -:bPrnt-> r1;
+v0 -c0-> r0;
+v1 -c2-> v0;
+v3 -c3-> v0;
+v3_99a1941:next;
+v3_99a1941 -:bPrnt-> v0;
+v4_0658772:Cell;
+v4_0658772 -:bPrnt-> v3_99a1941;
+v5_5274933:this;
+v5_5274933 -:bPrnt-> v4_0658772;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v0, v1, v2, v3, r0, v4, r1, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v1 -> v1, 
+v3 -> v3, 
+v5 -> v5 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule returnRule {
+r0:Node; r1:Node; v0:this; v1:thisRef; v1_p0:BPort; v2:append; v2_p0:BPort; v3:Void; 
+v0 -c0:bPrnt-> r0;
+v2 -c1:bPrnt-> r1;
+v1 -c2:bPrnt-> v0;
+v2_p0 -c3:bNode-> v2;
+v3 -c4:bPrnt-> v2;
+v1_p0 -c5:bNode-> v1;
+pat0:nac_NodesWithoutSites(v1, 0);
+pat1:nac_NodesWithoutSites(v2, 1);
+pat2:nac_NodesWithoutSites(v3, 0);
+if { v1_p0.ix == 0; }
+if { v2_p0.ix == 0; }
+
+e0:BEdge;
+v2_p0 -:bLink-> e0;
+v1_p0 -:bLink-> e0;
+replace {
+v0 -c0-> r0;
+v3 -:bPrnt-> r1;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v0, v1, v2, v3, r0, r1};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v0 -> v0 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}

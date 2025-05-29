@@ -1,0 +1,2970 @@
+#using "metamodel_graph.gm"
+pattern nac_NodesWithoutSites(src:BNode, var validChildCount: int) {
+    negative {
+        if { adjacentIncoming(src, bPrnt).size() != validChildCount; }
+    }
+}
+
+rule es_0_1 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N1; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N0; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn1:BLink;
+v11_p0 -:bLink-> rn1;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+rn0:BLink;
+v3_p0 -:bLink-> rn0;
+left:BLink;
+v0_p0 -:bLink-> left;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v3_p0 -:bLink-> rn0;
+v0_p0 -:bLink-> left;
+v11_p0 -:bLink-> rn1;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_0_2 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N2; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N0; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+rn2:BLink;
+v11_p0 -:bLink-> rn2;
+rn0:BLink;
+v3_p0 -:bLink-> rn0;
+left:BLink;
+v0_p0 -:bLink-> left;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v11_p0 -:bLink-> rn2;
+v3_p0 -:bLink-> rn0;
+v0_p0 -:bLink-> left;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_1_2 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N2; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N1; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn1:BLink;
+v3_p0 -:bLink-> rn1;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+rn2:BLink;
+v11_p0 -:bLink-> rn2;
+left:BLink;
+v0_p0 -:bLink-> left;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn1;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v11_p0 -:bLink-> rn2;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_0_3 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N3; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N0; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn3:BLink;
+v11_p0 -:bLink-> rn3;
+rn0:BLink;
+v3_p0 -:bLink-> rn0;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+left:BLink;
+v0_p0 -:bLink-> left;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v3_p0 -:bLink-> rn0;
+v11_p0 -:bLink-> rn3;
+v0_p0 -:bLink-> left;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_1_3 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N3; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N1; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn3:BLink;
+v11_p0 -:bLink-> rn3;
+rn1:BLink;
+v3_p0 -:bLink-> rn1;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+left:BLink;
+v0_p0 -:bLink-> left;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v3_p0 -:bLink-> rn1;
+v0_p0 -:bLink-> left;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v11_p0 -:bLink-> rn3;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_1_4 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N4; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N1; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn4:BLink;
+v11_p0 -:bLink-> rn4;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+left:BLink;
+v0_p0 -:bLink-> left;
+rn1:BLink;
+v3_p0 -:bLink-> rn1;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v11_p0 -:bLink-> rn4;
+v3_p0 -:bLink-> rn1;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v0_p0 -:bLink-> left;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_2_3 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N3; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N2; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn3:BLink;
+v11_p0 -:bLink-> rn3;
+rn2:BLink;
+v3_p0 -:bLink-> rn2;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v11_p0 -:bLink-> rn3;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn2;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_2_4 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N4; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N2; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn2:BLink;
+v3_p0 -:bLink-> rn2;
+left:BLink;
+v0_p0 -:bLink-> left;
+rn4:BLink;
+v11_p0 -:bLink-> rn4;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v3_p0 -:bLink-> rn2;
+v0_p0 -:bLink-> left;
+v11_p0 -:bLink-> rn4;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule es_3_4 {
+r0:Node; v6:SLck; v7:SLckRef; v7_p0:BPort; v8:Mvmt; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v12:ID; v11:Robot; v11_p0:BPort; v14:SLck; v13:N4; v0:Locale; v0_p0:BPort; v16:Mvmt; v1:Route; v1_p0:BPort; v15:SLckRef; v15_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N3; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v11 -c9:bPrnt-> v10;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v8 -c13:bPrnt-> v3;
+v11_p0 -c14:bNode-> v11;
+v12 -c15:bPrnt-> v11;
+v14 -c16:bPrnt-> v11;
+v16 -c17:bPrnt-> v11;
+v5 -c18:bPrnt-> v4;
+v7 -c19:bPrnt-> v6;
+v13 -c20:bPrnt-> v12;
+v15 -c21:bPrnt-> v14;
+v7_p0 -c22:bNode-> v7;
+v15_p0 -c23:bNode-> v15;
+pat0:nac_NodesWithoutSites(v6, 1);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v10, 1);
+pat4:nac_NodesWithoutSites(v12, 1);
+pat5:nac_NodesWithoutSites(v14, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v16, 0);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 0);
+pat10:nac_NodesWithoutSites(v2, 1);
+pat11:nac_NodesWithoutSites(v4, 1);
+pat12:nac_NodesWithoutSites(v5, 0);
+if { v7_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v11_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v15_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn3:BLink;
+v3_p0 -:bLink-> rn3;
+rn4:BLink;
+v11_p0 -:bLink-> rn4;
+right:BLink;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0:BEdge;
+v7_p0 -:bLink-> e0;
+v15_p0 -:bLink-> e0;
+left:BLink;
+v0_p0 -:bLink-> left;
+replace {
+v6 -c12-> v3;
+v8 -c13-> v3;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v11 -c9-> v10;
+v11_p0 -c14-> v11;
+v13 -c20-> v12;
+v12 -c15-> v11;
+v16 -c17-> v11;
+v14 -c16-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v11_p0 -:bLink-> rn4;
+v9_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn3;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v9 -> v9, 
+v11 -> v11, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_1_0 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N0; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N1; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn0:BLink;
+v10_p0 -:bLink-> rn0;
+left:BLink;
+v0_p0 -:bLink-> left;
+rn1:BLink;
+v3_p0 -:bLink-> rn1;
+replace {
+v6 -c12-> v3;
+v7_1c75146:SLckRef;
+v7_1c75146 -:bPrnt-> v6;
+v7_1c75146_p0:BPort;
+v7_1c75146_p0 -c20:bNode-> v7_1c75146;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_e322139:SLckRef;
+v15_e322139 -:bPrnt-> v13;
+v15_e322139_p0:BPort;
+v15_e322139_p0 -c21:bNode-> v15_e322139;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v10_p0 -:bLink-> rn0;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn1;
+e0_a8a6986:BEdge;
+v7_1c75146_p0 -:bLink-> e0_a8a6986;
+v15_e322139_p0 -:bLink-> e0_a8a6986;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_2_0 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N0; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N2; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn2:BLink;
+v3_p0 -:bLink-> rn2;
+rn0:BLink;
+v10_p0 -:bLink-> rn0;
+replace {
+v6 -c12-> v3;
+v7_2973873:SLckRef;
+v7_2973873 -:bPrnt-> v6;
+v7_2973873_p0:BPort;
+v7_2973873_p0 -c20:bNode-> v7_2973873;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_5993275:SLckRef;
+v15_5993275 -:bPrnt-> v13;
+v15_5993275_p0:BPort;
+v15_5993275_p0 -c21:bNode-> v15_5993275;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v0_p0 -:bLink-> left;
+e0_132a379:BEdge;
+v7_2973873_p0 -:bLink-> e0_132a379;
+v15_5993275_p0 -:bLink-> e0_132a379;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v3_p0 -:bLink-> rn2;
+v10_p0 -:bLink-> rn0;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_2_1 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N1; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N2; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+rn2:BLink;
+v3_p0 -:bLink-> rn2;
+rn1:BLink;
+v10_p0 -:bLink-> rn1;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+replace {
+v6 -c12-> v3;
+v7_6d0e930:SLckRef;
+v7_6d0e930 -:bPrnt-> v6;
+v7_6d0e930_p0:BPort;
+v7_6d0e930_p0 -c20:bNode-> v7_6d0e930;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_8284821:SLckRef;
+v15_8284821 -:bPrnt-> v13;
+v15_8284821_p0:BPort;
+v15_8284821_p0 -c21:bNode-> v15_8284821;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v10_p0 -:bLink-> rn1;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn2;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0_574453:BEdge;
+v7_6d0e930_p0 -:bLink-> e0_574453;
+v15_8284821_p0 -:bLink-> e0_574453;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_3_0 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N0; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N3; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn3:BLink;
+v3_p0 -:bLink-> rn3;
+left:BLink;
+v0_p0 -:bLink-> left;
+rn0:BLink;
+v10_p0 -:bLink-> rn0;
+replace {
+v6 -c12-> v3;
+v7_484b771:SLckRef;
+v7_484b771 -:bPrnt-> v6;
+v7_484b771_p0:BPort;
+v7_484b771_p0 -c20:bNode-> v7_484b771;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_912476:SLckRef;
+v15_912476 -:bPrnt-> v13;
+v15_912476_p0:BPort;
+v15_912476_p0 -c21:bNode-> v15_912476;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v0_p0 -:bLink-> left;
+e0_e36793:BEdge;
+v7_484b771_p0 -:bLink-> e0_e36793;
+v15_912476_p0 -:bLink-> e0_e36793;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v3_p0 -:bLink-> rn3;
+v10_p0 -:bLink-> rn0;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_3_1 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N1; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N3; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn1:BLink;
+v10_p0 -:bLink-> rn1;
+rn3:BLink;
+v3_p0 -:bLink-> rn3;
+replace {
+v6 -c12-> v3;
+v7_d87f184:SLckRef;
+v7_d87f184 -:bPrnt-> v6;
+v7_d87f184_p0:BPort;
+v7_d87f184_p0 -c20:bNode-> v7_d87f184;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_1c44197:SLckRef;
+v15_1c44197 -:bPrnt-> v13;
+v15_1c44197_p0:BPort;
+v15_1c44197_p0 -c21:bNode-> v15_1c44197;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+e0_e1f5868:BEdge;
+v7_d87f184_p0 -:bLink-> e0_e1f5868;
+v15_1c44197_p0 -:bLink-> e0_e1f5868;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v3_p0 -:bLink-> rn3;
+v0_p0 -:bLink-> left;
+v10_p0 -:bLink-> rn1;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_3_2 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N2; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N3; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+rn3:BLink;
+v3_p0 -:bLink-> rn3;
+rn2:BLink;
+v10_p0 -:bLink-> rn2;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+replace {
+v6 -c12-> v3;
+v7_d680546:SLckRef;
+v7_d680546 -:bPrnt-> v6;
+v7_d680546_p0:BPort;
+v7_d680546_p0 -c20:bNode-> v7_d680546;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_8cf8820:SLckRef;
+v15_8cf8820 -:bPrnt-> v13;
+v15_8cf8820_p0:BPort;
+v15_8cf8820_p0 -c21:bNode-> v15_8cf8820;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+e0_5dbe225:BEdge;
+v7_d680546_p0 -:bLink-> e0_5dbe225;
+v15_8cf8820_p0 -:bLink-> e0_5dbe225;
+v10_p0 -:bLink-> rn2;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn3;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_4_0 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N0; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N4; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+rn0:BLink;
+v10_p0 -:bLink-> rn0;
+rn4:BLink;
+v3_p0 -:bLink-> rn4;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+replace {
+v6 -c12-> v3;
+v7_fdda127:SLckRef;
+v7_fdda127 -:bPrnt-> v6;
+v7_fdda127_p0:BPort;
+v7_fdda127_p0 -c20:bNode-> v7_fdda127;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_432f352:SLckRef;
+v15_432f352 -:bPrnt-> v13;
+v15_432f352_p0:BPort;
+v15_432f352_p0 -c21:bNode-> v15_432f352;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v10_p0 -:bLink-> rn0;
+v3_p0 -:bLink-> rn4;
+e0_e920284:BEdge;
+v7_fdda127_p0 -:bLink-> e0_e920284;
+v15_432f352_p0 -:bLink-> e0_e920284;
+v0_p0 -:bLink-> left;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_4_1 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N1; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N4; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+left:BLink;
+v0_p0 -:bLink-> left;
+rn1:BLink;
+v10_p0 -:bLink-> rn1;
+rn4:BLink;
+v3_p0 -:bLink-> rn4;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+replace {
+v6 -c12-> v3;
+v7_5917440:SLckRef;
+v7_5917440 -:bPrnt-> v6;
+v7_5917440_p0:BPort;
+v7_5917440_p0 -c20:bNode-> v7_5917440;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_b48634:SLckRef;
+v15_b48634 -:bPrnt-> v13;
+v15_b48634_p0:BPort;
+v15_b48634_p0 -c21:bNode-> v15_b48634;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+v10_p0 -:bLink-> rn1;
+v3_p0 -:bLink-> rn4;
+v0_p0 -:bLink-> left;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+e0_7a0e769:BEdge;
+v7_5917440_p0 -:bLink-> e0_7a0e769;
+v15_b48634_p0 -:bLink-> e0_7a0e769;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_4_2 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N2; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N4; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+rn2:BLink;
+v10_p0 -:bLink-> rn2;
+left:BLink;
+v0_p0 -:bLink-> left;
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+rn4:BLink;
+v3_p0 -:bLink-> rn4;
+replace {
+v6 -c12-> v3;
+v7_9b8e127:SLckRef;
+v7_9b8e127 -:bPrnt-> v6;
+v7_9b8e127_p0:BPort;
+v7_9b8e127_p0 -c20:bNode-> v7_9b8e127;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_0a9f347:SLckRef;
+v15_0a9f347 -:bPrnt-> v13;
+v15_0a9f347_p0:BPort;
+v15_0a9f347_p0 -c21:bNode-> v15_0a9f347;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+e0_1320771:BEdge;
+v7_9b8e127_p0 -:bLink-> e0_1320771;
+v15_0a9f347_p0 -:bLink-> e0_1320771;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v10_p0 -:bLink-> rn2;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn4;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule ss_4_3 {
+r0:Node; v6:SLck; v7:Mvmt; v8:Locale; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:N3; v11:ID; v14:Mvmt; v13:SLck; v0:Locale; v0_p0:BPort; v1:Route; v1_p0:BPort; v2:OccupiedBy; v3:Robot; v3_p0:BPort; v4:ID; v5:N4; 
+v0 -c0:bPrnt-> r0;
+v8 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v2 -c4:bPrnt-> v0;
+v8_p0 -c5:bNode-> v8;
+v9 -c6:bPrnt-> v8;
+v1_p0 -c7:bNode-> v1;
+v3 -c8:bPrnt-> v2;
+v10 -c9:bPrnt-> v9;
+v3_p0 -c10:bNode-> v3;
+v4 -c11:bPrnt-> v3;
+v6 -c12:bPrnt-> v3;
+v7 -c13:bPrnt-> v3;
+v10_p0 -c14:bNode-> v10;
+v11 -c15:bPrnt-> v10;
+v13 -c16:bPrnt-> v10;
+v14 -c17:bPrnt-> v10;
+v5 -c18:bPrnt-> v4;
+v12 -c19:bPrnt-> v11;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 0);
+pat2:nac_NodesWithoutSites(v9, 1);
+pat3:nac_NodesWithoutSites(v12, 0);
+pat4:nac_NodesWithoutSites(v11, 1);
+pat5:nac_NodesWithoutSites(v14, 0);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v1, 0);
+pat8:nac_NodesWithoutSites(v2, 1);
+pat9:nac_NodesWithoutSites(v4, 1);
+pat10:nac_NodesWithoutSites(v5, 0);
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v3_p0.ix == 0; }
+
+right:BLink;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+left:BLink;
+v0_p0 -:bLink-> left;
+rn4:BLink;
+v3_p0 -:bLink-> rn4;
+rn3:BLink;
+v10_p0 -:bLink-> rn3;
+replace {
+v6 -c12-> v3;
+v7_5668348:SLckRef;
+v7_5668348 -:bPrnt-> v6;
+v7_5668348_p0:BPort;
+v7_5668348_p0 -c20:bNode-> v7_5668348;
+v7 -c13-> v3;
+v8 -c1-> r0;
+v8_p0 -c5-> v8;
+v9 -c6-> v8;
+v11 -c15-> v10;
+v10 -c9-> v9;
+v10_p0 -c14-> v10;
+v13 -c16-> v10;
+v12 -c19-> v11;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v14 -c17-> v10;
+v1 -c3-> v0;
+v1_p0 -c7-> v1;
+v15_3eb1686:SLckRef;
+v15_3eb1686 -:bPrnt-> v13;
+v15_3eb1686_p0:BPort;
+v15_3eb1686_p0 -c21:bNode-> v15_3eb1686;
+v2 -c4-> v0;
+v3 -c8-> v2;
+v3_p0 -c10-> v3;
+v4 -c11-> v3;
+v5 -c18-> v4;
+e0_b526516:BEdge;
+v7_5668348_p0 -:bLink-> e0_b526516;
+v15_3eb1686_p0 -:bLink-> e0_b526516;
+v10_p0 -:bLink-> rn3;
+v8_p0 -:bLink-> right;
+v1_p0 -:bLink-> right;
+v0_p0 -:bLink-> left;
+v3_p0 -:bLink-> rn4;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v8 -> v8, 
+v10 -> v10, 
+v0 -> v0, 
+v3 -> v3 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule initMvmt {
+r0:Node; v6:OccupiedBy; v7:Locale; v7_p0:BPort; v8:Route; v8_p0:BPort; v9:OccupiedBy; v10:Robot; v10_p0:BPort; v12:SLckRef; v12_p0:BPort; v11:SLck; v14:Locale; v14_p0:BPort; v13:Mvmt; v0:Locale; v0_p0:BPort; v16:Robot; v16_p0:BPort; v1:Route; v1_p0:BPort; v15:OccupiedBy; v2:Route; v2_p0:BPort; v18:SLckRef; v18_p0:BPort; v3:OccupiedBy; v17:SLck; v4:Locale; v4_p0:BPort; v5:Route; v5_p0:BPort; v19:Mvmt; 
+v0 -c0:bPrnt-> r0;
+v4 -c1:bPrnt-> r0;
+v7 -c2:bPrnt-> r0;
+v14 -c3:bPrnt-> r0;
+v0_p0 -c4:bNode-> v0;
+v1 -c5:bPrnt-> v0;
+v2 -c6:bPrnt-> v0;
+v3 -c7:bPrnt-> v0;
+v4_p0 -c8:bNode-> v4;
+v5 -c9:bPrnt-> v4;
+v6 -c10:bPrnt-> v4;
+v7_p0 -c11:bNode-> v7;
+v8 -c12:bPrnt-> v7;
+v9 -c13:bPrnt-> v7;
+v14_p0 -c14:bNode-> v14;
+v15 -c15:bPrnt-> v14;
+v1_p0 -c16:bNode-> v1;
+v2_p0 -c17:bNode-> v2;
+v5_p0 -c18:bNode-> v5;
+v8_p0 -c19:bNode-> v8;
+v10 -c20:bPrnt-> v9;
+v16 -c21:bPrnt-> v15;
+v10_p0 -c22:bNode-> v10;
+v11 -c23:bPrnt-> v10;
+v13 -c24:bPrnt-> v10;
+v16_p0 -c25:bNode-> v16;
+v17 -c26:bPrnt-> v16;
+v19 -c27:bPrnt-> v16;
+v12 -c28:bPrnt-> v11;
+v18 -c29:bPrnt-> v17;
+v12_p0 -c30:bNode-> v12;
+v18_p0 -c31:bNode-> v18;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v7, 2);
+pat2:nac_NodesWithoutSites(v8, 0);
+pat3:nac_NodesWithoutSites(v9, 1);
+pat4:nac_NodesWithoutSites(v12, 0);
+pat5:nac_NodesWithoutSites(v11, 1);
+pat6:nac_NodesWithoutSites(v13, 0);
+pat7:nac_NodesWithoutSites(v0, 3);
+pat8:nac_NodesWithoutSites(v1, 0);
+pat9:nac_NodesWithoutSites(v15, 1);
+pat10:nac_NodesWithoutSites(v2, 0);
+pat11:nac_NodesWithoutSites(v18, 0);
+pat12:nac_NodesWithoutSites(v3, 0);
+pat13:nac_NodesWithoutSites(v17, 1);
+pat14:nac_NodesWithoutSites(v5, 0);
+pat15:nac_NodesWithoutSites(v19, 0);
+if { v7_p0.ix == 0; }
+if { v8_p0.ix == 0; }
+if { v10_p0.ix == 0; }
+if { v12_p0.ix == 0; }
+if { v14_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v16_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v2_p0.ix == 0; }
+if { v18_p0.ix == 0; }
+if { v4_p0.ix == 0; }
+if { v5_p0.ix == 0; }
+
+y1:BLink;
+v4_p0 -:bLink-> y1;
+v1_p0 -:bLink-> y1;
+n_right:BLink;
+v16_p0 -:bLink-> n_right;
+y0:BLink;
+v0_p0 -:bLink-> y0;
+y2:BLink;
+v7_p0 -:bLink-> y2;
+v2_p0 -:bLink-> y2;
+y3:BLink;
+v14_p0 -:bLink-> y3;
+v5_p0 -:bLink-> y3;
+v8_p0 -:bLink-> y3;
+n_left:BLink;
+v10_p0 -:bLink-> n_left;
+e0:BEdge;
+v12_p0 -:bLink-> e0;
+v18_p0 -:bLink-> e0;
+replace {
+v4 -c1-> r0;
+v4_p0 -c8-> v4;
+v5 -c9-> v4;
+v5_p0 -c18-> v5;
+v8_b97d78:WayPoint;
+v8_b97d78 -:bPrnt-> v4;
+v8_b97d78_p0:BPort;
+v8_b97d78_p0 -c32:bNode-> v8_b97d78;
+v9_b5f2150:SLckRef;
+v9_b5f2150 -:bPrnt-> v8_b97d78;
+v9_b5f2150_p0:BPort;
+v9_b5f2150_p0 -c33:bNode-> v9_b5f2150;
+v30_a259681:Token;
+v30_a259681 -:bPrnt-> v19;
+v6 -c10-> v4;
+v31_e52413:Token;
+v31_e52413 -:bPrnt-> v19;
+v8 -c12-> v7;
+v8_p0 -c19-> v8;
+v7 -c2-> r0;
+v7_p0 -c11-> v7;
+v14_e24c76:SLckRef;
+v14_e24c76 -:bPrnt-> v13_3768861;
+v14_e24c76_p0:BPort;
+v14_e24c76_p0 -c34:bNode-> v14_e24c76;
+v13_3768861:WayPoint;
+v13_3768861 -:bPrnt-> v7;
+v13_3768861_p0:BPort;
+v13_3768861_p0 -c35:bNode-> v13_3768861;
+v10 -c20-> v9;
+v10_p0 -c22-> v10;
+v9 -c13-> v7;
+v12 -c28-> v11;
+v12_p0 -c30-> v12;
+v11 -c23-> v10;
+v13 -c24-> v10;
+v14 -c3-> r0;
+v14_p0 -c14-> v14;
+v20_04d619:Token;
+v20_04d619 -:bPrnt-> v13;
+v23_8121642:SLckRef;
+v23_8121642 -:bPrnt-> v22_3fb9984;
+v23_8121642_p0:BPort;
+v23_8121642_p0 -c36:bNode-> v23_8121642;
+v22_3fb9984:WayPoint;
+v22_3fb9984 -:bPrnt-> v14;
+v22_3fb9984_p0:BPort;
+v22_3fb9984_p0 -c37:bNode-> v22_3fb9984;
+v16 -c21-> v15;
+v16_p0 -c25-> v16;
+v15 -c15-> v14;
+v0 -c0-> r0;
+v0_p0 -c4-> v0;
+v18 -c29-> v17;
+v18_p0 -c31-> v18;
+v1 -c5-> v0;
+v1_p0 -c16-> v1;
+v17 -c26-> v16;
+v2 -c6-> v0;
+v2_p0 -c17-> v2;
+v29_0f02869:Token;
+v29_0f02869 -:bPrnt-> v19;
+v3_57a1914:WayPoint;
+v3_57a1914 -:bPrnt-> v0;
+v3_57a1914_p0:BPort;
+v3_57a1914_p0 -c38:bNode-> v3_57a1914;
+v19 -c27-> v16;
+v4_ae71684:SLckRef;
+v4_ae71684 -:bPrnt-> v3_57a1914;
+v4_ae71684_p0:BPort;
+v4_ae71684_p0 -c39:bNode-> v4_ae71684;
+v3 -c7-> v0;
+v7_p0 -:bLink-> y2;
+v2_p0 -:bLink-> y2;
+v3_57a1914_p0 -:bLink-> y2;
+v12_p0 -:bLink-> e0;
+v18_p0 -:bLink-> e0;
+v4_p0 -:bLink-> y1;
+v22_3fb9984_p0 -:bLink-> y1;
+v1_p0 -:bLink-> y1;
+v14_e24c76_p0 -:bLink-> n_left;
+v10_p0 -:bLink-> n_left;
+v5_p0 -:bLink-> y3;
+v8_p0 -:bLink-> y3;
+v13_3768861_p0 -:bLink-> y3;
+v14_p0 -:bLink-> y3;
+v8_b97d78_p0 -:bLink-> y0;
+v0_p0 -:bLink-> y0;
+v9_b5f2150_p0 -:bLink-> n_right;
+v23_8121642_p0 -:bLink-> n_right;
+v16_p0 -:bLink-> n_right;
+v4_ae71684_p0 -:bLink-> n_right;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v12, v11, v14, v13, v0, v16, v1, v15, v2, v18, v3, v17, r0, v4, v5, v19};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v10 -> v10, 
+v14 -> v14, 
+v16 -> v16, 
+v4 -> v4 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}
+rule move {
+r0:Node; v6:SLckRef; v6_p0:BPort; v7:Mvmt; v8:Token; v9:Locale; v9_p0:BPort; v10:OccupiedBy; v0:Locale; v0_p0:BPort; v1:WayPoint; v1_p0:BPort; v2:SLckRef; v2_p0:BPort; v3:OccupiedBy; v4:Robot; v4_p0:BPort; v5:SLck; 
+v0 -c0:bPrnt-> r0;
+v9 -c1:bPrnt-> r0;
+v0_p0 -c2:bNode-> v0;
+v1 -c3:bPrnt-> v0;
+v3 -c4:bPrnt-> v0;
+v9_p0 -c5:bNode-> v9;
+v10 -c6:bPrnt-> v9;
+v1_p0 -c7:bNode-> v1;
+v2 -c8:bPrnt-> v1;
+v4 -c9:bPrnt-> v3;
+v2_p0 -c10:bNode-> v2;
+v4_p0 -c11:bNode-> v4;
+v5 -c12:bPrnt-> v4;
+v7 -c13:bPrnt-> v4;
+v6 -c14:bPrnt-> v5;
+v8 -c15:bPrnt-> v7;
+v6_p0 -c16:bNode-> v6;
+pat0:nac_NodesWithoutSites(v6, 0);
+pat1:nac_NodesWithoutSites(v8, 0);
+pat2:nac_NodesWithoutSites(v10, 0);
+pat3:nac_NodesWithoutSites(v1, 1);
+pat4:nac_NodesWithoutSites(v2, 0);
+pat5:nac_NodesWithoutSites(v3, 1);
+pat6:nac_NodesWithoutSites(v5, 1);
+if { v6_p0.ix == 0; }
+if { v9_p0.ix == 0; }
+if { v0_p0.ix == 0; }
+if { v1_p0.ix == 0; }
+if { v2_p0.ix == 0; }
+if { v4_p0.ix == 0; }
+
+tgt:BLink;
+v9_p0 -:bLink-> tgt;
+v1_p0 -:bLink-> tgt;
+ref:BLink;
+v6_p0 -:bLink-> ref;
+n_id:BLink;
+v2_p0 -:bLink-> n_id;
+v4_p0 -:bLink-> n_id;
+src:BLink;
+v0_p0 -:bLink-> src;
+replace {
+v6 -c14-> v5;
+v6_p0 -c16-> v6;
+v7 -c13-> v4;
+v0 -c0-> r0;
+v0_p0 -c2-> v0;
+v3 -c4-> v0;
+v9 -c1-> r0;
+v9_p0 -c5-> v9;
+v10 -c6-> v9;
+v4 -:bPrnt-> v10;
+v4_p0 -c11-> v4;
+v5 -c12-> v4;
+v4_p0 -:bLink-> n_id;
+v9_p0 -:bLink-> tgt;
+v0_p0 -:bLink-> src;
+v6_p0 -:bLink-> ref;
+
+---
+
+def ref allMatchedNodes:set<Node> = set<Node>{v6, v7, v8, v9, v10, v0, v1, v2, v3, r0, v4, v5};
+def ref indexMap:map<Node,Node> = map<Node,Node>{
+v7 -> v7, 
+v9 -> v9, 
+v0 -> v0, 
+v4 -> v4 
+};
+def ref tasks:map<Edge,Node> = map<Edge,Node>{};
+eval {
+
+def ref nodesWithSites:set<Node> = indexMap.domain();
+for(cur:Node in nodesWithSites) {
+    emit(cur, "->", indexMap[cur], " ", countAdjacentIncoming(cur), "\n");
+    if(indexMap[cur] == null) {
+        emit("Remove everything because there is no site mapping for the reactum", adjacentIncoming(cur), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort) {
+                rem(x__INTERN);
+            }
+        }
+        continue;
+    }
+    if(cur != indexMap[cur]) {
+        emit("Site mappings are different! Size of children: ", adjacentIncoming(cur).size(), "\n");
+        for(x__INTERN:Node in adjacentIncoming(cur)) {
+            if(typeof(x__INTERN) != BPort && !(x__INTERN in allMatchedNodes)) {
+                emit("\tchild = ", x__INTERN, " ", typeof(x__INTERN), " ", indexMap[cur], " ", outgoing(x__INTERN), "\n");
+                for(y:Edge in outgoing(x__INTERN)) {
+                    if(typeof(y) == bPrnt) {
+                        /// Get new parent node: indexMap[cur] and redirect edge, is better than adding and removing edge
+                        emit("\ty", y, " ", typeof(y), " ", nameof(y), "\n");
+                        ///redirectTarget(y, indexMap[cur]);
+                        tasks.add(y, indexMap[cur]);
+                        ///rem(y);
+                    }
+                }
+                ///add(bPrnt, x__INTERN, indexMap[cur]);
+            }
+        }
+    }
+}
+def ref keyset:set<Edge> = tasks.domain();
+for(k:Edge in keyset) {
+   redirectTarget(k, tasks[k]);
+}
+
+
+}
+}
+}

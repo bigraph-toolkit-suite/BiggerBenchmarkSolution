@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- 
+  Change these paths according to your 
+  installation location of GrGen.NET 
+  -->
+  <!-- GrGen.NET Dependencies -->
+  <ItemGroup>
+    <Reference Include="lgspBackend">
+      <HintPath>/opt/grgen/bin/lgspBackend.dll</HintPath>
+    </Reference>
+    <Reference Include="libGr">
+      <HintPath>/opt/grgen/bin/libGr.dll</HintPath>
+    </Reference>
+    <Reference Include="graphViewerAndSequenceDebugger">
+      <HintPath>/opt/grgen/bin/graphViewerAndSequenceDebugger.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Dependencies -->
+  <ItemGroup>
+    <ProjectReference Include="..\btsLib\btsLib.csproj" /> <!-- Project reference -->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Only include these source files: -->
+  <ItemGroup>
+    <None Include="metamodel_graph.gm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ruleset.grg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="initial_graph.grs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="metamodel_graphModel.cs" />
+    <Compile Include="rulesetActions.cs" />
+  </ItemGroup>
+
+  <!-- Build Configuration -->
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cp initial_graph.grs $(OutDir)" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="cp /opt/grgen/bin/grgen.jar $(OutDir)" />
+    <Exec Command="cp /opt/grgen/bin/antlr-runtime-3.4.jar $(OutDir)" />
+    <Exec Command="cp /opt/grgen/bin/jargs.jar $(OutDir)" />
+    <Exec Command="cp /opt/grgen/bin/yComp.jar $(OutDir)" />
+  </Target>
+</Project>
