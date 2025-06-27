@@ -1,0 +1,20 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite the following publication."
+authors:
+  - family-names: Grzelak
+    given-names: Dominik
+  - family-names: Hamann
+    given-names: Markus
+preferred-citation:
+  type: article
+  title: "Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation"
+  authors:
+    - family-names: Grzelak
+      given-names: Dominik
+    - family-names: Hamann
+      given-names: Markus
+  doi: 10.1145/3736704
+  journal: Form. Asp. Comput.
+  date-published: 2025-06
+  issn: 0934-5043
+  url: https://doi.org/10.1145/3736704

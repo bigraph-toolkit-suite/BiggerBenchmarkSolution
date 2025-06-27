@@ -56,7 +56,20 @@ namespace MyApplication
                 Console.WriteLine("- " + each.Name + " (" + each + ")");
                 allRules[rIx++] = each.Name;
             }
-            
+
+            // /// Compute only the final state without the whole transition system
+//            string rewritingSeq = "(" + string.Join(" | ", allRules) + ")*";
+//            Console.WriteLine("rewritingSeq=" + rewritingSeq);
+//            procEnv = new LGSPGraphProcessingEnvironment(graph, actions);
+//            procEnv.ApplyGraphRewriteSequence(rewritingSeq);
+//            Console.WriteLine(procEnv.PerformanceInfo.MatchesFound + " matches found.");
+//            LGSPGraph finalGraph0 = procEnv.graph;
+//            using (VCGDumper dumper = new VCGDumper("finalState.vcg"))
+//            {
+//                GraphDumper.Dump((de.unika.ipd.grGen.libGr.INamedGraph)finalGraph0, dumper);
+//            }
+//            Environment.Exit(0);
+
             // GraphViewer graphViewer = new GraphViewer();
             // graphViewer.ShowGraph(importedNamedGraph, GraphViewerTypes.YComp, "Organic", null); // Let yComp observe any changes to the graph
 
@@ -90,7 +103,7 @@ namespace MyApplication
 
 
                     // (Variant A)
-                    IMatches matches = _procEnv.Match(currentRule, new object[] {}, -1, false, new List<FilterCall>(), true);
+                    IMatches matches = _procEnv.Match(currentRule, new object[] { }, -1, false, new List<FilterCall>(), true);
                     Console.WriteLine("Matches Found (Rule = " + ruleName + "): " + matches.Count);
                     int mIX = 0;
                     foreach (IMatch match in matches)
@@ -107,7 +120,7 @@ namespace MyApplication
 
                         mIX++;
                     }
-                    
+
                     // (Variant B)
                     // IMatches matches = currentRule.Match(_procEnv, -1, null); // Find all matches
                     // // IMatches matches = _procEnv.Match(actions.GetAction(ruleName), new object[] {}, -1, false, new List<FilterCall>(), true);
@@ -167,6 +180,13 @@ namespace MyApplication
             // Open DOT file with Gephi
             System.IO.File.WriteAllText(basePath + "reaction_graph.dot", dotGraph);
             // ///////////////////////////////////////////////////////////////////////////////
+            
+            // Stop time measurement
+            procEnv.PerformanceInfo.Stop();
+            // TimeNeeded is in seconds
+            Console.WriteLine("procEnv.PerformanceInfo.TimeNeeded = ");
+            Console.WriteLine(procEnv.PerformanceInfo.TimeNeeded + "(seconds)");
+            Console.WriteLine((procEnv.PerformanceInfo.TimeNeeded * 1000) + " (millis)");
 
         }
 

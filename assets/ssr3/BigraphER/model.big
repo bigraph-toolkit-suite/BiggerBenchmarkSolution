@@ -1,0 +1,43 @@
+ctrl VarSpace = 0;
+ctrl True = 0;
+ctrl False = 0;
+ctrl Error = 0;
+ctrl Locale = 1;
+ctrl Route = 1;
+ctrl WayPoint = 1;
+ctrl OccupiedBy = 0;
+ctrl Robot = 1;
+ctrl ID = 0;
+ctrl N0 = 0;
+ctrl N1 = 0;
+ctrl N2 = 0;
+ctrl N3 = 0;
+ctrl N4 = 0;
+ctrl N5 = 0;
+ctrl N6 = 0;
+ctrl N7 = 0;
+ctrl N8 = 0;
+ctrl N9 = 0;
+ctrl N10 = 0;
+ctrl Bat = 0;
+ctrl Pow = 0;
+ctrl SLck = 0;
+ctrl SLckRef = 1;
+ctrl Mvmt = 0;
+ctrl Token = 0;
+
+react ss_1_0 = (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.1 | Mvmt.1 | id(1) ) )) --> /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) )));
+react ss_2_0 = (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.1 | Mvmt.1 | id(1) ) )) --> /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) )));
+react ss_2_1 = (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.1 | Mvmt.1 | id(1) ) )) --> /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) )));
+react initmvmt = /e0 ((Locale{y0}.( Route{y1}.1 | Route{y2}.1 | OccupiedBy.1 ) | Locale{y1}.( Route{y3}.1 | OccupiedBy.1 | id(1) ) | Locale{y2}.( Route{y3}.1 | OccupiedBy.Robot{n_left}.( SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{y3}.( OccupiedBy.Robot{n_right}.( SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) | id(1) ))) --> /e0 ((Locale{y0}.( Route{y1}.1 | Route{y2}.1 | OccupiedBy.1 | WayPoint{y2}.SLckRef{n_right}.1 ) | Locale{y1}.( Route{y3}.1 | OccupiedBy.1 | id(1) | WayPoint{y0}.SLckRef{n_right}.1 ) | Locale{y2}.( Route{y3}.1 | OccupiedBy.Robot{n_left}.( SLck.SLckRef{e0}.1 | Mvmt.Token.1 | id(1) ) | WayPoint{y3}.SLckRef{n_left}.1 ) | Locale{y3}.( OccupiedBy.Robot{n_right}.( SLck.SLckRef{e0}.1 | Mvmt.( Token.1 | Token.1 | Token.1 ) | id(1) ) | id(1) | WayPoint{y1}.SLckRef{n_right}.1 )));
+react move = (Locale{src}.( id(1) | WayPoint{tgt}.SLckRef{n_id}.1 | OccupiedBy.Robot{n_id}.( SLck.SLckRef{ref}.1 | Mvmt.( Token.1 | id(1) ) | id(1) ) ) | Locale{tgt}.( id(1) | OccupiedBy.1 )) --> (Locale{src}.( id(1) | OccupiedBy.1 ) | Locale{tgt}.( OccupiedBy.Robot{n_id}.( SLck.SLckRef{ref}.1 | Mvmt.id(1) | id(1) ) | id(1) ));
+react es_0_1 = /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ))) --> (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.1 | Mvmt.1 | id(1) ) ));
+react es_0_2 = /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ))) --> (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn0}.( ID.N0.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.1 | Mvmt.1 | id(1) ) ));
+react es_1_2 = /e0 ((Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.SLckRef{e0}.1 | Mvmt.1 | id(1) ) ))) --> (Locale{left}.( id(1) | Route{right}.1 | OccupiedBy.Robot{rn1}.( ID.N1.1 | SLck.1 | Mvmt.1 | id(1) ) ) | Locale{right}.( id(1) | OccupiedBy.Robot{rn2}.( ID.N2.1 | SLck.1 | Mvmt.1 | id(1) ) ));
+
+big bigraphbasemodel = Locale{y0}.( Route{y1}.1 | Route{y3}.1 | OccupiedBy.1 ) | Locale{y1}.( Route{y2}.1 | Route{y4}.1 | OccupiedBy.1 ) | Locale{y2}.( Route{y5}.1 | OccupiedBy.1 ) | Locale{y3}.( Route{y4}.1 | OccupiedBy.Robot{rn2}.( ID.N2.1 | Bat.( Pow.1 | Pow.1 ) | SLck.1 | Mvmt.1 ) ) | Locale{y4}.( Route{y5}.1 | OccupiedBy.Robot{rn1}.( ID.N1.1 | Bat.( Pow.1 | Pow.1 ) | SLck.1 | Mvmt.1 ) ) | Locale{y5}.OccupiedBy.Robot{rn0}.( ID.N0.1 | Bat.( Pow.1 | Pow.1 ) | SLck.1 | Mvmt.1 ) ;
+
+begin brs
+	init bigraphbasemodel;
+	rules = [{ss_1_0,ss_2_0,ss_2_1,initmvmt,move,es_0_1,es_0_2,es_1_2}];
+end

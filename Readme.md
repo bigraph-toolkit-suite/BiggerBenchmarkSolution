@@ -2,7 +2,7 @@
 
 This repository serves as the benchmark companion project to the paper:
 
-**Dominik Grzelak and Markus Hamann**, *Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation*, Formal Aspects of Computing, ACM, 2025 (accepted).
+**D. Grzelak** and **M. Hamann**, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
 
 It includes the exemplary use cases discussed in the paper, providing:
 
@@ -178,9 +178,26 @@ $ cp assets/Project.template.csproj NewUseCase/NewUseCase.csproj
 
 If necessary, adjust the dotnet version or GrGen.NET path in the `*.csproj`.
 
+## How to cite the benchmark
+
+BibTeX:
+
+```bibtex
+@article{grzelak_ImprovingBigraphRewriting_2025,
+  title = {Improving {{Bigraph Rewriting}} with {{GrGen}}.{{NET}} to {{Enable Efficient System Simulation}}},
+  author = {Grzelak, Dominik and Hamann, Markus},
+  year = {2025},
+  month = jun,
+  journal = {Form. Asp. Comput.},
+  issn = {0934-5043},
+  doi = {10.1145/3736704}
+}
+```
+
 ## References
 
-- Paper: Dominik Grzelak and Markus Hamann, Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation, Formal Aspects of Computing, ACM, 2025 (accepted).
+- Theoretic Paper: D. Grzelak and M. Hamann, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
+- Tool Paper: D. Grzelak, “BiGGer: a model transformation tool written in java for bigraph rewriting in grgen.net,” Journal of Open Source Software, vol. 9, no. 98, p. 6491, Jun. 2024, doi: [10.21105/joss.06491](https://joss.theoj.org/papers/10.21105/joss.06491)
 - GitHub Repository of the BiGGer Tool: https://github.com/bigraph-toolkit-suite/bigraphs.grgen-bigraphs
   - It contains the Java code to re-generate the bigraphical models (Ecore/XMI format) in the unit tests
 

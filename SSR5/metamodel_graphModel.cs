@@ -1,6 +1,6 @@
 // This file has been generated automatically by GrGen (www.grgen.net)
 // Do not modify this file! Any changes will be lost!
-// Generated from "./foo/ruleset.grg" on Wed May 28 21:40:17 CEST 2025
+// Generated from "./foo/ruleset.grg" on Fri May 30 12:45:22 CEST 2025
 
 using System;
 using System.Collections.Generic;
