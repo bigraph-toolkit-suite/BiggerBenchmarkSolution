@@ -23,13 +23,10 @@ It includes the exemplary use cases discussed in the paper, providing:
 
 ```sh
 $ dotnet --list-sdks
-6.0.136 [/usr/lib/dotnet/sdk]
-8.0.116 [/usr/lib/dotnet/sdk]
+8.0.117 [/usr/lib/dotnet/sdk]
 $ dotnet --list-runtimes
-Microsoft.AspNetCore.App 6.0.36 [/usr/lib/dotnet/shared/Microsoft.AspNetCore.App]
-Microsoft.AspNetCore.App 8.0.16 [/usr/lib/dotnet/shared/Microsoft.AspNetCore.App]
-Microsoft.NETCore.App 6.0.36 [/usr/lib/dotnet/shared/Microsoft.NETCore.App]
-Microsoft.NETCore.App 8.0.16 [/usr/lib/dotnet/shared/Microsoft.NETCore.App]
+Microsoft.AspNetCore.App 8.0.17 [/usr/lib/dotnet/shared/Microsoft.AspNetCore.App]
+Microsoft.NETCore.App 8.0.17 [/usr/lib/dotnet/shared/Microsoft.NETCore.App]
 ```
 
 #### Configure VS Code
@@ -111,6 +108,15 @@ After completion, some files that will be exported into the folder `BiggerBenchm
 
 - The individual states in `*.vcg` format
 - The transition system as DOT file
+
+You can visualize each system state `.vcg` using ycomp since GrGen.NET is installed:
+
+```shell
+# From BiggerBenchmarkSolution/SSR2/bin/Debug/net8.0/states/
+$ ycomp state_0.vcg
+```
+
+![State of the self-sorting robots problem for 2 robots](assets/ycomp-screenshot-two-robots.png)
 
 ### Regenerating GrGen.NET Model Files
 
