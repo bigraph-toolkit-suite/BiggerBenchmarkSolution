@@ -11,6 +11,18 @@ It includes the exemplary use cases discussed in the paper, providing:
 - The corresponding C# model checking procedures utilizing [**libGr v7.2**](https://grgen.de/doc/API_7.2).
 - The compiled [**BiGGer** tool](https://github.com/bigraph-toolkit-suite/bigraphs.grgen-bigraphs) for re-generating the GrGen.NET artifacts.
 
+## Benchmark Preview: Self-Sorting Robots in Action
+
+These transition systems were automatically generated using BiGGer and GrGen.NET, modeling the state space of multiple robots performing physical bubble-sort.
+
+| **N = 3 Robots**                                                             | **N = 4 Robots**                                                                    | **N = 5 Robots**                                                                        |
+|------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| ![SSR3](assets/lts-ssr3.png) <br> Nodes: 78 <br> Edges: 96 <br> Time: 0.70 s | ![SSR4](assets/lts-ssr4.png) <br> Nodes: 1,263 <br> Edges: 2,767 <br> Time: 10.02 s | ![SSR5](assets/lts-ssr5.png) <br> Nodes: ≈ 9,192 <br> Edges: 22,047 <br> Time: 105.56 s |
+
+
+
+📌 Each dot represents a system state. Edges are transitions. Graphs were rendered from `.dot` output using [Gephi](https://gephi.org/).
+
 ## Setup
 
 #### Configure System
@@ -202,10 +214,14 @@ BibTeX:
 
 ## References
 
-- Theoretic Paper: D. Grzelak and M. Hamann, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
-- Tool Paper: D. Grzelak, “BiGGer: a model transformation tool written in java for bigraph rewriting in grgen.net,” Journal of Open Source Software, vol. 9, no. 98, p. 6491, Jun. 2024, doi: [10.21105/joss.06491](https://joss.theoj.org/papers/10.21105/joss.06491)
-- GitHub Repository of the BiGGer Tool: https://github.com/bigraph-toolkit-suite/bigraphs.grgen-bigraphs
-  - It contains the Java code to re-generate the bigraphical models (Ecore/XMI format) in the unit tests
+
+- Tooling: 
+  - D. Grzelak, “BiGGer: a model transformation tool written in java for bigraph rewriting in grgen.net,” Journal of Open Source Software, vol. 9, no. 98, p. 6491, Jun. 2024, doi: [10.21105/joss.06491](https://joss.theoj.org/papers/10.21105/joss.06491)
+  - Code: https://github.com/bigraph-toolkit-suite/bigraphs.grgen-bigraphs
+    - It contains the Java code to re-generate the bigraphical models (Ecore/XMI format) in the unit tests
+  - BiGGer Slides (Accompanying slide set explaining how to simulate bigraphs using GrGen.NET with the BiGGer tool): https://doi.org/10.25368/2025.146
+- Theory:
+  - D. Grzelak and M. Hamann, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
 
 ## License
 
