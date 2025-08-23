@@ -2,7 +2,7 @@
 
 This repository serves as the benchmark companion project to the paper:
 
-**D. Grzelak** and **M. Hamann**, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
+> **D. Grzelak** and **M. Hamann**, “Improving Bigraph Rewriting with GrGen.NET to Enable Efficient System Simulation,” Form. Asp. Comput., Jun. 2025, doi: [10.1145/3736704](https://dl.acm.org/doi/10.1145/3736704).
 
 It includes the exemplary use cases discussed in the paper, providing:
 
@@ -15,10 +15,13 @@ It includes the exemplary use cases discussed in the paper, providing:
 
 These transition systems were automatically generated using BiGGer and GrGen.NET, modeling the state space of multiple robots performing physical bubble-sort.
 
-| **N = 3 Robots**                                                             | **N = 4 Robots**                                                                    | **N = 5 Robots**                                                                        |
-|------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| ![SSR3](assets/lts-ssr3.png) <br> Nodes: 78 <br> Edges: 96 <br> Time: 0.70 s | ![SSR4](assets/lts-ssr4.png) <br> Nodes: 1,263 <br> Edges: 2,767 <br> Time: 10.02 s | ![SSR5](assets/lts-ssr5.png) <br> Nodes: ≈ 9,192 <br> Edges: 22,047 <br> Time: 105.56 s |
+| **N = 3 Robots**                                                                        | **N = 4 Robots**                                                                           |
+|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| ![SSR3](assets/results/lts-ssr3.png) <br/> Nodes: 78 <br/> Edges: 96 <br/> Time: 0.70 s | ![SSR4](assets/results/lts-ssr4.png) <br/> Nodes: 1,263 <br/> Edges: 2,767 <br/> Time: 10.02 s |
 
+| **N = 5 Robots**                                                                               | **N = 6 Robots**                                                                                 |
+|------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| ![SSR5](assets/results/lts-ssr5.png) <br/> Nodes: ≈ 9,192 <br/> Edges: 22,047 <br/> Time: 105.56 s | ![SSR6](assets/results/lts-ssr6.png) <br/> Nodes: ≈ 314,226 <br/> Edges: 1,003,215 <br/> Time: 19459.07 s |
 
 
 📌 Each dot represents a system state. Edges are transitions. Graphs were rendered from `.dot` output using [Gephi](https://gephi.org/).
@@ -196,7 +199,7 @@ $ cp assets/Project.template.csproj NewUseCase/NewUseCase.csproj
 
 If necessary, adjust the dotnet version or GrGen.NET path in the `*.csproj`.
 
-## How to cite the benchmark
+## How to Cite the Benchmark
 
 BibTeX:
 
